@@ -1,0 +1,116 @@
+  TITLE:  six;
+  DATA: FILE IS "mplusdata2.txt";
+  VARIABLE:
+    NAMES ARE
+    id bmi1 bmi2 bmi3 bmi4 bmi5 bmi6 bmi7 bmi8 bmi9 bmi10
+    age1 age2 age3 age4 age5 age6 age7 age8 age9 age10;
+
+    USEVARIABLES ARE
+    bmi1 bmi2 bmi3 bmi4 bmi5 bmi6 bmi7 bmi8 bmi9 bmi10
+    age1 age2 age3 age4 age5 age6 age7 age8 age9 age10;
+    
+    IDVARIABLE IS id; 
+         
+    MISSING are ALL(-9999); 
+    CLASSES = c(6); 
+    
+  ANALYSIS: 
+    ESTIMATOR = MLR; 
+    TYPE IS MIXTURE;
+    STARTS = 2000 200;
+    STITERATIONS = 10;
+    ALGORITHM=INTEGRATION;
+    INTEGRATION = MONTECARLO;
+    PROCESS = 20;
+     
+  MODEL:
+    %OVERALL%
+    i s q cubic | bmi1@-5.4 bmi2@-4.3 bmi3@-3.1 bmi4@-2.3 bmi5@-1.1 bmi6@0
+    bmi7@1 bmi8@2.5 bmi9@4.8 bmi10@11.5;
+    
+    cubic@0;
+    
+    bmi1 ON age1; 
+    bmi2 ON age2;
+    bmi3 ON age3;
+    bmi4 ON age4;
+    bmi5 ON age5;
+    bmi6 ON age6;
+    bmi7 ON age7;
+    bmi8 ON age8;
+    bmi9 ON age9;
+    bmi10 ON age10;
+
+    age1-age10;
+
+    %c#1%
+    bmi1-bmi10;
+
+    [i](c1p1);
+    [s](c1p2);
+    [q](c1p3);
+    [cubic](c1p4);
+
+    %c#2%
+    bmi1-bmi10;
+
+    [i](c2p1);
+    [s](c2p2);
+    [q](c2p3);
+    [cubic](c2p4);
+
+    %c#3%
+    bmi1-bmi10;
+
+    [i](c3p1);
+    [s](c3p2);
+    [q](c3p3);
+    [cubic](c3p4);
+
+    %c#4%
+    bmi1-bmi10;
+
+    [i](c4p1);
+    [s](c4p2);
+    [q](c4p3);
+    [cubic](c4p4);
+
+    %c#5%
+    bmi1-bmi10;
+
+    [i](c5p1);
+    [s](c5p2);
+    [q](c5p3);
+    [cubic](c5p4);
+
+    %c#6%
+    bmi1-bmi10;
+
+    [i](c6p1);
+    [s](c6p2);
+    [q](c6p3);
+    [cubic](c6p4);
+
+    MODEL CONSTRAINT:
+      PLOT(c1 c2 c3 c4 c5 c6);
+      LOOP(time,-5.4,11.6,0.1);
+      c1 = c1p1+(c1p2*time)+(c1p3*time^2)+(c1p4*time^3); 
+      c2 = c2p1+(c2p2*time)+(c2p3*time^2)+(c2p4*time^3); 
+      c3 = c3p1+(c3p2*time)+(c3p3*time^2)+(c3p4*time^3); 
+      c4 = c4p1+(c4p2*time)+(c4p3*time^2)+(c4p4*time^3);
+      c5 = c5p1+(c5p2*time)+(c5p3*time^2)+(c5p4*time^3);
+      c6 = c6p1+(c6p2*time)+(c6p3*time^2)+(c6p4*time^3);
+
+  SAVEDATA: 
+    FILE IS "six.dat";
+    SAVE = CPROB;
+      
+  OUTPUT:
+	sampstat cinterval TECH1 TECH8;	 
+
+  PLOT: 
+    TYPE = PLOT1;
+    TYPE = PLOT2;
+    TYPE = PLOT3;
+    SERIES = bmi1(7.5) bmi2(8.6) bmi3(9.8) bmi4(10.6)
+    bmi5(11.8) bmi6(12.9) bmi7(13.9) bmi8(15.4) bmi9(17.7) bmi10(24.4);
